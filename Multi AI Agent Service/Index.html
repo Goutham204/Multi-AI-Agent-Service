@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Platform — Multi-Agent Financial Services</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0f172a;
+  --navy-light:#1e293b;
+  --navy-border:#2d3f58;
+  --accent:#3b82f6;
+  --accent-dark:#2563eb;
+  --accent-light:#eff6ff;
+  --success:#10b981;
+  --success-light:#ecfdf5;
+  --danger:#ef4444;
+  --danger-light:#fef2f2;
+  --warning:#f59e0b;
+  --warning-light:#fffbeb;
+  --text-primary:#0f172a;
+  --text-secondary:#64748b;
+  --text-muted:#94a3b8;
+  --border:#e2e8f0;
+  --surface:#f8fafc;
+  --white:#ffffff;
+  --radius-sm:6px;
+  --radius:10px;
+  --radius-lg:14px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 10px 30px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.06);
+}
+body.dark{
+  --text-primary:#f1f5f9;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+  --border:#2d3f58;
+  --surface:#1e293b;
+  --white:#0f172a;
+  --accent-light:#1e3a5f;
+  --success-light:#064e3b;
+  --danger-light:#450a0a;
+  --warning-light:#451a03;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.3);
+  --shadow:0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg:0 10px 30px rgba(0,0,0,0.4);
+}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--surface);
+  color:var(--text-primary);
+  min-height:100vh;
+  display:flex;
+  transition:background 0.3s,color 0.3s;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  min-height:100vh;
+  background:var(--navy);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  z-index:100;
+  transition:transform 0.3s;
+}
+.sidebar-header{
+  padding:28px 24px 24px;
+  border-bottom:1px solid var(--navy-border);
+}
+.sidebar-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand-icon{
+  width:38px;height:38px;
+  background:var(--accent);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.brand-name{
+  color:#f1f5f9;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:-0.3px;
+}
+.brand-tagline{
+  color:#64748b;
+  font-size:11px;
+  margin-top:2px;
+}
+.sidebar-nav{
+  flex:1;
+  padding:16px 12px;
+  overflow-y:auto;
+}
+.nav-section-label{
+  color:#475569;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:8px 12px 6px;
+  margin-top:8px;
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  color:#94a3b8;
+  font-size:14px;
+  font-weight:500;
+  transition:all 0.2s;
+  margin-bottom:2px;
+}
+.nav-item:hover{background:var(--navy-light);color:#e2e8f0;}
+.nav-item.active{background:var(--accent);color:#fff;}
+.nav-item.active .nav-icon{color:#fff;}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;
+  background:rgba(255,255,255,0.15);
+  color:#e2e8f0;
+  font-size:10px;
+  font-weight:700;
+  padding:2px 7px;
+  border-radius:20px;
+}
+.nav-item.active .nav-badge{background:rgba(255,255,255,0.25);}
+.sidebar-footer{
+  padding:16px 12px;
+  border-top:1px solid var(--navy-border);
+}
+.dark-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:500;
+  transition:all 0.2s;
+  background:none;
+  border:none;
+  width:100%;
+}
+.dark-toggle:hover{background:var(--navy-light);color:#e2e8f0;}
+.toggle-track{
+  width:36px;height:20px;
+  background:#334155;
+  border-radius:10px;
+  position:relative;
+  margin-left:auto;
+  transition:background 0.3s;
+}
+.toggle-thumb{
+  width:14px;height:14px;
+  background:#94a3b8;
+  border-radius:50%;
+  position:absolute;
+  top:3px;left:3px;
+  transition:all 0.3s;
+}
+body.dark .toggle-track{background:var(--accent);}
+body.dark .toggle-thumb{background:#fff;left:19px;}
+
+/* MAIN */
+.main{
+  margin-left:260px;
+  flex:1;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.topbar{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;
+  z-index:50;
+  box-shadow:var(--shadow-sm);
+}
+.topbar-left h2{
+  font-size:18px;
+  font-weight:700;
+  color:var(--text-primary);
+  letter-spacing:-0.3px;
+}
+.topbar-left p{
+  font-size:12px;
+  color:var(--text-muted);
+  margin-top:1px;
+}
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.status-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:var(--success-light);
+  color:var(--success);
+  font-size:12px;
+  font-weight:600;
+  padding:6px 12px;
+  border-radius:20px;
+  border:1px solid rgba(16,185,129,0.2);
+}
+.status-dot{
+  width:7px;height:7px;
+  background:var(--success);
+  border-radius:50%;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.content{
+  padding:28px 32px;
+  flex:1;
+}
+.section{display:none;}
+.section.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARDS */
+.card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+}
+.card-header{
+  padding:20px 24px 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.card-title{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text-primary);
+}
+.card-subtitle{
+  font-size:12px;
+  color:var(--text-muted);
+  margin-top:2px;
+}
+.card-body{padding:20px 24px 24px;}
+
+/* KPI GRID */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:24px;
+}
+.kpi-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  box-shadow:var(--shadow-sm);
+  position:relative;
+  overflow:hidden;
+}
+.kpi-card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+}
+.kpi-card.blue::before{background:var(--accent);}
+.kpi-card.green::before{background:var(--success);}
+.kpi-card.orange::before{background:var(--warning);}
+.kpi-card.red::before{background:var(--danger);}
+.kpi-icon{
+  width:38px;height:38px;
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  margin-bottom:14px;
+}
+.kpi-icon.blue{background:var(--accent-light);color:var(--accent);}
+.kpi-icon.green{background:var(--success-light);color:var(--success);}
+.kpi-icon.orange{background:var(--warning-light);color:var(--warning);}
+.kpi-icon.red{background:var(--danger-light);color:var(--danger);}
+.kpi-value{
+  font-size:28px;
+  font-weight:800;
+  color:var(--text-primary);
+  letter-spacing:-1px;
+  line-height:1;
+  margin-bottom:4px;
+}
+.kpi-label{
+  font-size:12px;
+  color:var(--text-muted);
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+/* CHAT */
+.chat-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  max-height:260px;
+  overflow-y:auto;
+  margin-bottom:20px;
+}
+.chat-msg{
+  display:flex;
+  margin-bottom:12px;
+}
+.chat-msg.user{flex-direction:row-reverse;}
+.chat-bubble{
+  max-width:75%;
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:13.5px;
+  line-height:1.5;
+}
+.chat-msg.agent .chat-bubble{
+  background:var(--white);
+  color:var(--text-primary);
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+}
+.chat-msg.user .chat-bubble{
+  background:var(--accent);
+  color:#fff;
+  border-bottom-right-radius:4px;
+}
+.chat-avatar{
+  width:30px;height:30px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;
+  margin:0 8px;
+}
+.chat-msg.agent .chat-avatar{background:var(--accent-light);color:var(--accent);}
+.chat-msg.user .chat-avatar{background:var(--navy);color:#fff;}
+
+/* WIZARD */
+.wizard-steps{
+  display:flex;
+  align-items:center;
+  margin-bottom:28px;
+  padding:20px 24px;
+  background:var(--surface);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+.wstep{
+  display:flex;
+  align-items:center;
+  flex:1;
+}
+.wstep:last-child{flex:none;}
+.wstep-circle{
+  width:34px;height:34px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  font-weight:700;
+  flex-shrink:0;
+  border:2px solid var(--border);
+  background:var(--white);
+  color:var(--text-muted);
+  transition:all 0.3s;
+}
+.wstep.active .wstep-circle{border-color:var(--accent);background:var(--accent);color:#fff;}
+.wstep.done .wstep-circle{border-color:var(--success);background:var(--success);color:#fff;}
+.wstep-info{margin-left:10px;}
+.wstep-num{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.wstep.active .wstep-num{color:var(--accent);}
+.wstep.done .wstep-num{color:var(--success);}
+.wstep-label{font-size:13px;font-weight:600;color:var(--text-secondary);}
+.wstep.active .wstep-label{color:var(--text-primary);}
+.wstep-line{flex:1;height:1px;background:var(--border);margin:0 16px;}
+.wstep.done .wstep-line,.wstep.done+.wstep-line{background:var(--success);}
+
+.wizard-page{display:none;}
+.wizard-page.active{display:block;animation:fadeUp 0.25s ease;}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{margin-bottom:0;}
+.form-group.full{grid-column:1/-1;}
+.form-label{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.form-control{
+  width:100%;
+  padding:10px 14px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:14px;
+  font-family:inherit;
+  color:var(--text-primary);
+  background:var(--white);
+  transition:border-color 0.2s,box-shadow 0.2s;
+  outline:none;
+}
+.form-control:hover{border-color:#94a3b8;}
+.form-control:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.12);}
+.form-control.valid{border-color:var(--success);}
+.form-control.invalid{border-color:var(--danger);}
+body.dark .form-control{background:var(--navy-light);color:var(--text-primary);border-color:var(--navy-border);}
+body.dark .form-control:hover{border-color:#475569;}
+.field-hint{
+  font-size:11px;
+  margin-top:5px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.field-hint.valid{color:var(--success);}
+.field-hint.invalid{color:var(--danger);}
+.field-hint.warn{color:var(--warning);}
+
+/* REVIEW */
+.review-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  margin-bottom:16px;
+}
+.review-section-title{
+  font-size:12px;
+  font-weight:700;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.review-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:7px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13.5px;
+}
+.review-row:last-child{border-bottom:none;}
+.review-row label{color:var(--text-secondary);}
+.review-row span{font-weight:600;color:var(--text-primary);}
+.terms-box{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:14px 16px;
+  font-size:12.5px;
+  color:var(--text-secondary);
+  line-height:1.7;
+  max-height:110px;
+  overflow-y:auto;
+  margin-bottom:14px;
+}
+.checkbox-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--text-secondary);
+  cursor:pointer;
+  margin-bottom:20px;
+}
+.checkbox-row input[type=checkbox]{
+  width:16px;height:16px;
+  accent-color:var(--accent);
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+/* BUTTONS */
+.btn-group{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:10px 20px;
+  border-radius:var(--radius-sm);
+  font-size:13.5px;
+  font-weight:600;
+  cursor:pointer;
+  border:none;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,0.35);}
+.btn-secondary{background:var(--surface);color:var(--text-secondary);border:1.5px solid var(--border);}
+.btn-secondary:hover{background:var(--border);color:var(--text-primary);}
+.btn-success{background:var(--success);color:#fff;}
+.btn-success:hover{background:#059669;transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,0.35);}
+.btn-ghost{background:none;color:var(--text-secondary);border:1.5px solid var(--border);}
+.btn-ghost:hover{background:var(--surface);color:var(--text-primary);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none !important;}
+
+/* RESPONSE */
+.result-card{
+  display:none;
+  border-radius:var(--radius-lg);
+  padding:24px;
+  margin-top:20px;
+  border:1px solid;
+  animation:fadeUp 0.3s ease;
+}
+.result-card.show{display:block;}
+.result-card.approved{background:var(--success-light);border-color:rgba(16,185,129,0.25);}
+.result-card.denied{background:var(--danger-light);border-color:rgba(239,68,68,0.2);}
+.result-card.info{background:var(--accent-light);border-color:rgba(59,130,246,0.2);}
+.result-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+  padding-bottom:16px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.result-icon{
+  width:44px;height:44px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+.approved .result-icon{background:rgba(16,185,129,0.15);}
+.denied .result-icon{background:rgba(239,68,68,0.12);}
+.info .result-icon{background:rgba(59,130,246,0.12);}
+.result-title{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
+.approved .result-title{color:#065f46;}
+.denied .result-title{color:#991b1b;}
+.info .result-title{color:#1e40af;}
+body.dark .approved .result-title{color:#6ee7b7;}
+body.dark .denied .result-title{color:#fca5a5;}
+body.dark .info .result-title{color:#93c5fd;}
+.result-subtitle{font-size:12px;margin-top:2px;}
+.approved .result-subtitle{color:#047857;}
+.denied .result-subtitle{color:#b91c1c;}
+.info .result-subtitle{color:#1d4ed8;}
+body.dark .approved .result-subtitle{color:#a7f3d0;}
+body.dark .denied .result-subtitle{color:#fecaca;}
+body.dark .info .result-subtitle{color:#bfdbfe;}
+.result-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.result-item{
+  background:rgba(255,255,255,0.6);
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+}
+body.dark .result-item{background:rgba(255,255,255,0.05);}
+.result-item-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.result-item-value{font-size:15px;font-weight:700;color:var(--text-primary);}
+.result-meta{font-size:11px;color:var(--text-muted);margin-top:14px;text-align:right;}
+
+/* HISTORY */
+.history-list{margin-top:20px;}
+.history-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:12px 16px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  margin-bottom:8px;
+  transition:all 0.2s;
+  cursor:pointer;
+}
+.history-item:hover{border-color:var(--accent);box-shadow:var(--shadow-sm);}
+.history-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.history-dot.success{background:var(--success);}
+.history-dot.error{background:var(--danger);}
+.history-dot.warn{background:var(--warning);}
+.history-text{flex:1;font-size:13px;color:var(--text-secondary);}
+.history-time{font-size:11px;color:var(--text-muted);white-space:nowrap;}
+
+/* ACTIVITY LOG */
+.activity-table{width:100%;border-collapse:collapse;}
+.activity-table th{
+  padding:10px 14px;
+  text-align:left;
+  font-size:11px;
+  font-weight:700;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.activity-table td{
+  padding:12px 14px;
+  font-size:13px;
+  color:var(--text-secondary);
+  border-bottom:1px solid var(--border);
+}
+.activity-table tr:last-child td{border-bottom:none;}
+.activity-table tr:hover td{background:var(--surface);}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+}
+.tag.success{background:var(--success-light);color:var(--success);}
+.tag.error{background:var(--danger-light);color:var(--danger);}
+.tag.warn{background:var(--warning-light);color:var(--warning);}
+.tag.info{background:var(--accent-light);color:var(--accent);}
+
+/* SUPPORT STEPS */
+.support-track{
+  display:flex;
+  gap:0;
+  margin-bottom:24px;
+}
+.strack-item{
+  flex:1;
+  padding:14px 16px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-right:none;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+}
+.strack-item:first-child{border-radius:var(--radius-sm) 0 0 var(--radius-sm);}
+.strack-item:last-child{border-right:1px solid var(--border);border-radius:0 var(--radius-sm) var(--radius-sm) 0;}
+.strack-item.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.strack-item.done{background:var(--success-light);border-color:rgba(16,185,129,0.3);}
+.strack-num{font-size:18px;font-weight:800;color:var(--text-muted);}
+.strack-item.active .strack-num{color:#fff;}
+.strack-item.done .strack-num{color:var(--success);}
+.strack-lbl{font-size:11px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+.strack-item.active .strack-lbl{color:rgba(255,255,255,0.85);}
+.strack-item.done .strack-lbl{color:var(--success);}
+
+/* ORDER STATUS */
+.order-status-track{
+  display:flex;
+  align-items:center;
+  margin:16px 0;
+  padding:16px;
+  background:var(--surface);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+}
+.otrack-step{text-align:center;flex:1;}
+.otrack-circle{
+  width:32px;height:32px;
+  border-radius:50%;
+  margin:0 auto 6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  border:2px solid var(--border);
+  background:var(--white);
+  color:var(--text-muted);
+}
+.otrack-circle.done{background:var(--success);border-color:var(--success);color:#fff;}
+.otrack-circle.current{background:var(--accent);border-color:var(--accent);color:#fff;}
+.otrack-label{font-size:10px;color:var(--text-muted);font-weight:600;}
+.otrack-line{flex:1;height:2px;background:var(--border);margin:0 4px;margin-bottom:20px;}
+.otrack-line.done{background:var(--success);}
+
+/* SECTION HEADERS */
+.section-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:24px;
+}
+.section-title{font-size:22px;font-weight:800;color:var(--text-primary);letter-spacing:-0.5px;}
+.section-desc{font-size:13px;color:var(--text-muted);margin-top:4px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+/* EMPTY */
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--text-muted);
+}
+.empty-state .empty-icon{font-size:36px;margin-bottom:12px;}
+.empty-state p{font-size:13px;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .result-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .content{padding:16px;}
+  .topbar{padding:0 16px;}
+  .kpi-grid{grid-template-columns:1fr;}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div>
+        <div class="brand-name">AI Platform</div>
+        <div class="brand-tagline">Multi-Agent Services</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Services</div>
+    <div class="nav-item active" onclick="switchSection('financial',this)">
+      <span></span> Financial Agent
+    </div>
+    <div class="nav-item" onclick="switchSection('support',this)">
+      <span></span> Support Agent
+    </div>
+    <div class="nav-section-label">Management</div>
+    <div class="nav-item" onclick="switchSection('admin',this)">
+      <span></span> Admin Dashboard
+      <span class="nav-badge" id="nb-total">0</span>
+    </div>
+    <div class="nav-item" onclick="switchSection('analytics',this)">
+      <span></span> Analytics
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="dark-toggle" onclick="toggleDark()">
+      <span></span> Dark Mode
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="topbar-title">Financial Loan Agent</h2>
+      <p id="topbar-sub">AI-powered loan eligibility assessment</p>
+    </div>
+    <div class="topbar-right">
+      <div class="status-badge"><div class="status-dot"></div> API Connected</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- FINANCIAL -->
+    <div id="sec-financial" class="section active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Loan Application</div>
+          <div class="section-desc">Complete all 4 steps to check your eligibility instantly</div>
+        </div>
+      </div>
+
+      <!-- Chat -->
+      <div class="chat-box" id="chat-financial">
+        <div class="chat-msg agent">
+          <div class="chat-bubble">Welcome! I'm your AI Financial Agent. Fill in the form below to get an instant loan eligibility decision.</div>
+        </div>
+      </div>
+
+      <!-- Wizard Steps -->
+      <div class="wizard-steps">
+        <div class="wstep active" id="ws1">
+          <div class="wstep-circle" id="wc1">1</div>
+          <div class="wstep-info">
+            <div class="wstep-num">Step 1</div>
+            <div class="wstep-label">Personal Info</div>
+          </div>
+        </div>
+        <div class="wstep-line" id="wl1"></div>
+        <div class="wstep" id="ws2">
+          <div class="wstep-circle" id="wc2">2</div>
+          <div class="wstep-info">
+            <div class="wstep-num">Step 2</div>
+            <div class="wstep-label">Financial Info</div>
+          </div>
+        </div>
+        <div class="wstep-line" id="wl2"></div>
+        <div class="wstep" id="ws3">
+          <div class="wstep-circle" id="wc3">3</div>
+          <div class="wstep-info">
+            <div class="wstep-num">Step 3</div>
+            <div class="wstep-label">Loan Details</div>
+          </div>
+        </div>
+        <div class="wstep-line" id="wl3"></div>
+        <div class="wstep" id="ws4">
+          <div class="wstep-circle" id="wc4">4</div>
+          <div class="wstep-info">
+            <div class="wstep-num">Step 4</div>
+            <div class="wstep-label">Review</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+
+          <!-- PAGE 1 -->
+          <div class="wizard-page active" id="fp1">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Full Name *</label>
+                <input class="form-control" id="f-name" placeholder="Ahmed Al Mansoori" oninput="vFinName()">
+                <div class="field-hint" id="fh-name"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Emirates ID *</label>
+                <input class="form-control" id="f-eid" placeholder="784-XXXX-XXXXXXX-X — Please use test/sample data only" oninput="vEID()">
+                <div class="field-hint" id="fh-eid"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number *</label>
+                <input class="form-control" id="f-phone" placeholder="+971 50 XXX XXXX — Please use test/sample data only" oninput="vPhone()">
+                <div class="field-hint" id="fh-phone"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input class="form-control" id="f-email" placeholder="ahmed@email.com — Please use test/sample data only" oninput="vEmail()">
+                <div class="field-hint" id="fh-email"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nationality</label>
+                <select class="form-control" id="f-nat">
+                  <option value="">— Select —</option>
+                  <option>UAE National</option>
+                  <option>Expat</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date of Birth</label>
+                <input class="form-control" id="f-dob" type="date">
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="fnNext(1)">Continue to Financial Info</button>
+            </div>
+          </div>
+
+          <!-- PAGE 2 -->
+          <div class="wizard-page" id="fp2">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Monthly Income (AED) *</label>
+                <input class="form-control" id="f-income" type="number" placeholder="8000" oninput="vIncome()">
+                <div class="field-hint" id="fh-income"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Credit Score (0–900) *</label>
+                <input class="form-control" id="f-credit" type="number" placeholder="720" min="0" max="900" oninput="vCredit()">
+                <div class="field-hint" id="fh-credit"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Employment Status *</label>
+                <select class="form-control" id="f-emp" onchange="vEmp()">
+                  <option value="">— Select —</option>
+                  <option value="employed">Employed</option>
+                  <option value="self_employed">Self-Employed</option>
+                  <option value="unemployed">Unemployed</option>
+                </select>
+                <div class="field-hint" id="fh-emp"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Employer / Company</label>
+                <input class="form-control" id="f-employer" placeholder="Company name">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Existing Monthly Liabilities (AED)</label>
+                <input class="form-control" id="f-liab" type="number" placeholder="0" value="0">
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-ghost" onclick="fnBack(2)">Back</button>
+              <button class="btn btn-primary" onclick="fnNext(2)">Continue to Loan Details</button>
+            </div>
+          </div>
+
+          <!-- PAGE 3 -->
+          <div class="wizard-page" id="fp3">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Desired Loan Amount (AED) *</label>
+                <input class="form-control" id="f-loan" type="number" placeholder="50000" oninput="vLoan()">
+                <div class="field-hint" id="fh-loan"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Loan Term (Months) *</label>
+                <input class="form-control" id="f-term" type="number" placeholder="36" min="6" max="240" oninput="vTerm()">
+                <div class="field-hint" id="fh-term"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Loan Purpose *</label>
+                <select class="form-control" id="f-purpose">
+                  <option value="">— Select —</option>
+                  <option>Personal</option>
+                  <option>Home Renovation</option>
+                  <option>Vehicle Purchase</option>
+                  <option>Education</option>
+                  <option>Medical</option>
+                  <option>Business</option>
+                  <option>Travel</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Collateral</label>
+                <select class="form-control" id="f-collateral">
+                  <option value="none">No Collateral</option>
+                  <option value="property">Property</option>
+                  <option value="vehicle">Vehicle</option>
+                  <option value="savings">Savings / Fixed Deposit</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Additional Notes</label>
+                <textarea class="form-control" id="f-notes" rows="3" placeholder="Any additional information..."></textarea>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-ghost" onclick="fnBack(3)">Back</button>
+              <button class="btn btn-primary" onclick="fnNext(3)">Review Application</button>
+            </div>
+          </div>
+
+          <!-- PAGE 4 -->
+          <div class="wizard-page" id="fp4">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="review-section">
+                <div class="review-section-title">Personal</div>
+                <div class="review-row"><label>Full Name</label><span id="rv-name">—</span></div>
+                <div class="review-row"><label>Emirates ID</label><span id="rv-eid">—</span></div>
+                <div class="review-row"><label>Phone</label><span id="rv-phone">—</span></div>
+                <div class="review-row"><label>Email</label><span id="rv-email">—</span></div>
+                <div class="review-row"><label>Nationality</label><span id="rv-nat">—</span></div>
+              </div>
+              <div class="review-section">
+                <div class="review-section-title">Financial</div>
+                <div class="review-row"><label>Monthly Income</label><span id="rv-income">—</span></div>
+                <div class="review-row"><label>Credit Score</label><span id="rv-credit">—</span></div>
+                <div class="review-row"><label>Employment</label><span id="rv-emp">—</span></div>
+                <div class="review-row"><label>Employer</label><span id="rv-employer">—</span></div>
+                <div class="review-row"><label>Liabilities</label><span id="rv-liab">—</span></div>
+              </div>
+              <div class="review-section" style="grid-column:1/-1;">
+                <div class="review-section-title">Loan Details</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;">
+                  <div class="review-row"><label>Amount</label><span id="rv-loan">—</span></div>
+                  <div class="review-row"><label>Term</label><span id="rv-term">—</span></div>
+                  <div class="review-row"><label>Purpose</label><span id="rv-purpose">—</span></div>
+                  <div class="review-row"><label>Collateral</label><span id="rv-collateral">—</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="terms-box">
+              <strong>Terms & Conditions</strong><br><br>
+              By submitting this application, I confirm all information provided is accurate and complete. I authorize the institution to verify my personal and financial information including credit history. This is a loan eligibility check and not a final approval. The institution reserves the right to approve or deny any application based on its internal credit policies. All offers are subject to final documentation review and verification. False information may result in application rejection and legal action.
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="f-terms">
+              I agree to the Terms & Conditions and authorize credit verification
+            </label>
+            <div class="btn-group">
+              <button class="btn btn-ghost" onclick="fnBack(4)">Back</button>
+              <button class="btn btn-success" onclick="submitFinancial()">Submit Application</button>
+              <button class="btn btn-ghost" id="pdf-btn" onclick="exportPDF()" style="display:none;">Download PDF</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="result-card" id="fin-result"></div>
+
+      <!-- History -->
+      <div id="fin-history" style="display:none;margin-top:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Recent Applications</div>
+        <div id="fin-history-list"></div>
+      </div>
+    </div>
+
+    <!-- SUPPORT -->
+    <div id="sec-support" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Support Center</div>
+          <div class="section-desc">Order lookups, refunds, complaints, and general inquiries</div>
+        </div>
+      </div>
+
+      <div class="chat-box" id="chat-support">
+        <div class="chat-msg agent">
+          <div class="chat-bubble">Hello! I can help with order lookups, refunds, complaints, and general inquiries. How can I assist you today?</div>
+        </div>
+      </div>
+
+      <!-- 3-step support track -->
+      <div class="support-track">
+        <div class="strack-item active" id="st1"><div class="strack-num">1</div><div class="strack-lbl">Your Details</div></div>
+        <div class="strack-item" id="st2"><div class="strack-num">2</div><div class="strack-lbl">Request</div></div>
+        <div class="strack-item" id="st3"><div class="strack-num">3</div><div class="strack-lbl">Review</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+
+          <!-- Support Page 1 -->
+          <div class="wizard-page active" id="sp1">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Your Full Name *</label>
+                <input class="form-control" id="s-name" placeholder="Ahmed Al Mansoori" oninput="vSName()">
+                <div class="field-hint" id="sh-name"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input class="form-control" id="s-email" placeholder="ahmed@email.com — Please use test/sample data only">
+              </div>
+              <div class="form-group full">
+                <label class="form-label">Phone Number</label>
+                <input class="form-control" id="s-phone" placeholder="+971 50 XXX XXXX — Please use test/sample data only">
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="snNext(1)">Continue to Request</button>
+            </div>
+          </div>
+
+          <!-- Support Page 2 -->
+          <div class="wizard-page" id="sp2">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Request Type *</label>
+                <select class="form-control" id="s-type" onchange="updateSPlaceholder()">
+                  <option value="">— Select —</option>
+                  <option value="order_lookup">Order Lookup</option>
+                  <option value="refund">Request Refund</option>
+                  <option value="complaint">File Complaint</option>
+                  <option value="inquiry">General Inquiry</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-control" id="s-priority">
+                  <option value="normal">Normal</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label class="form-label" id="s-req-label">Describe your request *</label>
+                <textarea class="form-control" id="s-request" rows="4" placeholder="Example: I want to look up order ORD-001"></textarea>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-ghost" onclick="snBack(2)">Back</button>
+              <button class="btn btn-primary" onclick="snNext(2)">Review & Submit</button>
+            </div>
+          </div>
+
+          <!-- Support Page 3 -->
+          <div class="wizard-page" id="sp3">
+            <div class="review-section">
+              <div class="review-section-title">Request Summary</div>
+              <div class="review-row"><label>Name</label><span id="srv-name">—</span></div>
+              <div class="review-row"><label>Email</label><span id="srv-email">—</span></div>
+              <div class="review-row"><label>Request Type</label><span id="srv-type">—</span></div>
+              <div class="review-row"><label>Priority</label><span id="srv-priority">—</span></div>
+              <div class="review-row"><label>Details</label><span id="srv-request" style="max-width:60%;text-align:right;word-break:break-word;">—</span></div>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-group">
+              <button class="btn btn-ghost" onclick="snBack(3)">Back</button>
+              <button class="btn btn-primary" onclick="submitSupport()">Submit Request</button>
+              <button class="btn btn-ghost" onclick="clearSupport()">Start Over</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="result-card" id="sup-result"></div>
+
+      <div id="sup-history" style="display:none;margin-top:24px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Recent Requests</div>
+        <div id="sup-history-list"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="sec-admin" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Admin Dashboard</div>
+          <div class="section-desc">Real-time overview of platform activity</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-value" id="kpi-total">0</div>
+          <div class="kpi-label">Total Requests</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-value" id="kpi-success">0%</div>
+          <div class="kpi-label">Success Rate</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-value" id="kpi-speed">—</div>
+          <div class="kpi-label">Avg Response (ms)</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-value" style="font-size:18px;color:var(--success);">Online</div>
+          <div class="kpi-label">API Status</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Activity Log</div>
+            <div class="card-subtitle">Last 10 requests across all agents</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding-top:12px;">
+          <table class="activity-table" id="activity-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Agent</th>
+                <th>Request</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="activity-body">
+              <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">No activity yet. Submit requests to see logs here.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="sec-analytics" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Analytics</div>
+          <div class="section-desc">Performance metrics and usage statistics</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-value" id="an-fin">0</div>
+          <div class="kpi-label">Loan Applications</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-value" id="an-sup">0</div>
+          <div class="kpi-label">Support Requests</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-value" id="an-approved">0</div>
+          <div class="kpi-label">Loans Approved</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-value" id="an-denied">0</div>
+          <div class="kpi-label">Loans Denied</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Performance</div></div>
+          <div class="card-body">
+            <div class="review-row"><label>API Response Time</label><span id="an-speed">— ms</span></div>
+            <div class="review-row"><label>Error Rate</label><span id="an-err">0%</span></div>
+            <div class="review-row"><label>Uptime</label><span style="color:var(--success);">99.9%</span></div>
+            <div class="review-row"><label>Database</label><span>DynamoDB</span></div>
+            <div class="review-row"><label>AI Model</label><span>Groq LLaMA 3.1</span></div>
+            <div class="review-row"><label>Infrastructure</label><span>AWS Lambda</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Approval Rate</div></div>
+          <div class="card-body">
+            <div style="text-align:center;padding:20px 0;">
+              <div style="font-size:52px;font-weight:800;color:var(--accent);letter-spacing:-2px;" id="an-rate">0%</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-top:6px;">of loan applications approved</div>
+            </div>
+            <div class="review-row"><label>Approved</label><span id="an-app2" style="color:var(--success);">0</span></div>
+            <div class="review-row"><label>Denied</label><span id="an-den2" style="color:var(--danger);">0</span></div>
+            <div class="review-row"><label>Total</label><span id="an-tot2">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_URL = "https://hvvdpiawog.execute-api.us-east-1.amazonaws.com/default/ai-agent-api";
+
+const state = {
+  requests:[],finRequests:[],supRequests:[],
+  stats:{total:0,approved:0,denied:0,totalMs:0,count:0}
+};
+
+// ---- NAVIGATION ----
+const topTitles = {
+  financial:['Financial Loan Agent','AI-powered loan eligibility assessment'],
+  support:['Support Center','Order lookups, refunds, and general inquiries'],
+  admin:['Admin Dashboard','Real-time overview of platform activity'],
+  analytics:['Analytics','Performance metrics and usage statistics']
+};
+
+function switchSection(id, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const [t,s]=topTitles[id];
+  document.getElementById('topbar-title').textContent=t;
+  document.getElementById('topbar-sub').textContent=s;
+}
+
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark',document.body.classList.contains('dark'));
+}
+if(localStorage.getItem('dark')==='true') document.body.classList.add('dark');
+
+// ---- FINANCIAL WIZARD ----
+let finStep=1;
+
+function fnNext(s){
+  if(s===1){
+    if(!document.getElementById('f-name').value.trim()||
+       !document.getElementById('f-eid').value.trim()||
+       !document.getElementById('f-phone').value.trim()||
+       !document.getElementById('f-email').value.trim()){
+      alert('Please fill all required fields.');return;
+    }
+  }
+  if(s===2){
+    if(!document.getElementById('f-income').value||
+       !document.getElementById('f-credit').value||
+       !document.getElementById('f-emp').value){
+      alert('Please fill all required fields.');return;
+    }
+    if(document.getElementById('f-emp').value==='unemployed'){
+      alert('Unemployed applicants are not eligible for a loan.');return;
+    }
+  }
+  if(s===3){
+    if(!document.getElementById('f-loan').value||
+       !document.getElementById('f-term').value||
+       !document.getElementById('f-purpose').value){
+      alert('Please fill all required fields.');return;
+    }
+    populateReview();
+  }
+  goFinStep(s+1);
+}
+
+function fnBack(s){goFinStep(s-1);}
+
+function goFinStep(s){
+  document.querySelectorAll('[id^="fp"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('fp'+s).classList.add('active');
+  for(let i=1;i<=4;i++){
+    const ws=document.getElementById('ws'+i);
+    const wc=document.getElementById('wc'+i);
+    ws.classList.remove('active','done');
+    if(i<s){ws.classList.add('done');wc.textContent='✓';}
+    else if(i===s){ws.classList.add('active');wc.textContent=i;}
+    else{wc.textContent=i;}
+    if(i<4){
+      const wl=document.getElementById('wl'+i);
+      wl.style.background=i<s?'var(--success)':'var(--border)';
+    }
+  }
+  finStep=s;
+}
+
+function populateReview(){
+  document.getElementById('rv-name').textContent=document.getElementById('f-name').value;
+  document.getElementById('rv-eid').textContent=document.getElementById('f-eid').value;
+  document.getElementById('rv-phone').textContent=document.getElementById('f-phone').value;
+  document.getElementById('rv-email').textContent=document.getElementById('f-email').value;
+  document.getElementById('rv-nat').textContent=document.getElementById('f-nat').value||'Not specified';
+  document.getElementById('rv-income').textContent='AED '+Number(document.getElementById('f-income').value).toLocaleString();
+  document.getElementById('rv-credit').textContent=document.getElementById('f-credit').value;
+  document.getElementById('rv-emp').textContent=document.getElementById('f-emp').value;
+  document.getElementById('rv-employer').textContent=document.getElementById('f-employer').value||'Not specified';
+  document.getElementById('rv-liab').textContent='AED '+(document.getElementById('f-liab').value||'0');
+  document.getElementById('rv-loan').textContent='AED '+Number(document.getElementById('f-loan').value).toLocaleString();
+  document.getElementById('rv-term').textContent=document.getElementById('f-term').value+' months';
+  document.getElementById('rv-purpose').textContent=document.getElementById('f-purpose').value;
+  document.getElementById('rv-collateral').textContent=document.getElementById('f-collateral').value;
+}
+
+// ---- FINANCIAL VALIDATIONS ----
+function setHint(id,msg,type){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.className='field-hint '+(type||'');
+}
+function vFinName(){const v=document.getElementById('f-name').value;setHint('fh-name',v.length>=3?'Valid name':v?'Name is too short':'','valid invalid'.split(' ')[v.length>=3?0:1]);}
+function vEID(){const v=document.getElementById('f-eid').value;setHint('fh-eid',v.length>=10?'Valid':v?'Invalid Emirates ID':'',v.length>=10?'valid':'invalid');}
+function vPhone(){const v=document.getElementById('f-phone').value;setHint('fh-phone',v.length>=9?'Valid':v?'Invalid phone':'',v.length>=9?'valid':'invalid');}
+function vEmail(){const v=document.getElementById('f-email').value;const ok=v.includes('@')&&v.includes('.');setHint('fh-email',ok?'Valid':v?'Invalid email':'',ok?'valid':'invalid');}
+function vIncome(){const v=parseFloat(document.getElementById('f-income').value);if(!v){setHint('fh-income','','');return;}if(v<3000)setHint('fh-income','Minimum AED 3,000 required','invalid');else setHint('fh-income','Income valid','valid');}
+function vCredit(){const v=parseInt(document.getElementById('f-credit').value);if(!v){setHint('fh-credit','','');return;}if(v<550)setHint('fh-credit','Minimum score 550','invalid');else if(v>=750)setHint('fh-credit','Excellent credit','valid');else if(v>=700)setHint('fh-credit','Good credit','valid');else setHint('fh-credit','Fair credit','warn');}
+function vLoan(){const v=parseFloat(document.getElementById('f-loan').value);if(!v){setHint('fh-loan','','');return;}if(v<1000)setHint('fh-loan','Minimum AED 1,000','invalid');else if(v>1000000)setHint('fh-loan','Maximum AED 1,000,000','invalid');else setHint('fh-loan','Amount valid','valid');}
+function vTerm(){const v=parseInt(document.getElementById('f-term').value);if(!v){setHint('fh-term','','');return;}if(v<6)setHint('fh-term','Minimum 6 months','invalid');else if(v>240)setHint('fh-term','Maximum 240 months','invalid');else setHint('fh-term','Term valid','valid');}
+function vEmp(){const v=document.getElementById('f-emp').value;if(v==='unemployed')setHint('fh-emp','Unemployed not eligible','invalid');else if(v)setHint('fh-emp','Valid','valid');else setHint('fh-emp','','');}
+
+// ---- SUBMIT FINANCIAL ----
+async function submitFinancial(){
+  if(!document.getElementById('f-terms').checked){alert('Please agree to the Terms & Conditions.');return;}
+  const name=document.getElementById('f-name').value;
+  const income=document.getElementById('f-income').value;
+  const credit=document.getElementById('f-credit').value;
+  const loan=document.getElementById('f-loan').value;
+  const term=document.getElementById('f-term').value;
+  const emp=document.getElementById('f-emp').value;
+  const purpose=document.getElementById('f-purpose').value;
+  const req=`My name is ${name}. I want AED ${loan} loan for ${purpose}, income AED ${income}, credit ${credit}, ${emp}, ${term} months`;
+  addChat('financial','user',req);
+  addChat('financial','agent','Processing your application...');
+  const t=Date.now();
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_type:'financial',request:req})});
+    const ms=Date.now()-t;
+    const data=await res.json();
+    showFinResult(data,ms);
+    recordReq('financial',req,data,ms);
+  }catch(e){
+    addChat('financial','agent','Connection error. Please try again.');
+    recordReq('financial',req,{status:'ERROR',reason:e.message},0);
+  }
+}
+
+function showFinResult(data,ms){
+  const box=document.getElementById('fin-result');
+  if(data.status==='APPROVED'){
+    const o=data.offer,r=data.rate_info;
+    addChat('financial','agent',`Loan APPROVED! AED ${o.loan_amount.toLocaleString()} at ${o.interest_rate_annual}% p.a. Monthly: AED ${o.monthly_payment.toLocaleString()}`);
+    box.className='result-card approved show';
+    box.innerHTML=`
+      <div class="result-header">
+        <div><div class="result-title">Loan Approved</div><div class="result-subtitle">Offer ID: ${o.offer_id} · Valid for ${o.valid_days} days</div></div>
+      </div>
+      <div class="result-grid">
+        <div class="result-item"><div class="result-item-label">Loan Amount</div><div class="result-item-value">AED ${o.loan_amount.toLocaleString()}</div></div>
+        <div class="result-item"><div class="result-item-label">Monthly Payment</div><div class="result-item-value">AED ${o.monthly_payment.toLocaleString()}</div></div>
+        <div class="result-item"><div class="result-item-label">Interest Rate</div><div class="result-item-value">${o.interest_rate_annual}% p.a.</div></div>
+        <div class="result-item"><div class="result-item-label">Total Interest</div><div class="result-item-value">AED ${r.total_interest.toLocaleString()}</div></div>
+        <div class="result-item"><div class="result-item-label">Total to Pay</div><div class="result-item-value">AED ${r.total_paid.toLocaleString()}</div></div>
+        <div class="result-item"><div class="result-item-label">Loan Term</div><div class="result-item-value">${r.term_months} months</div></div>
+      </div>
+      <div class="result-meta">Response time: ${ms}ms</div>`;
+    document.getElementById('pdf-btn').style.display='';
+    state.stats.approved++;
+  }else{
+    addChat('financial','agent',`Application denied. ${data.reason||data.error}`);
+    box.className='result-card denied show';
+    box.innerHTML=`
+      <div class="result-header">
+        <div><div class="result-title">Application Not Approved</div><div class="result-subtitle">Please review the details below</div></div>
+      </div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;"><strong>Reason:</strong> ${data.reason||data.error}</p>
+      <div class="result-meta">Response time: ${ms}ms</div>`;
+    state.stats.denied++;
+  }
+  state.stats.total++;
+  state.stats.totalMs+=ms;state.stats.count++;
+  updateStats();
+}
+
+function exportPDF(){
+  html2pdf().set({margin:10,filename:'loan-offer.pdf',html2canvas:{scale:2},jsPDF:{orientation:'portrait',unit:'mm',format:'a4'}}).from(document.getElementById('fin-result')).save();
+}
+
+// ---- SUPPORT WIZARD ----
+let supStep=1;
+
+function snNext(s){
+  if(s===1){if(!document.getElementById('s-name').value.trim()){alert('Please enter your name.');return;}}
+  if(s===2){
+    if(!document.getElementById('s-type').value||!document.getElementById('s-request').value.trim()){alert('Please fill all required fields.');return;}
+    document.getElementById('srv-name').textContent=document.getElementById('s-name').value;
+    document.getElementById('srv-email').textContent=document.getElementById('s-email').value||'Not provided';
+    document.getElementById('srv-type').textContent=document.getElementById('s-type').value;
+    document.getElementById('srv-priority').textContent=document.getElementById('s-priority').value;
+    document.getElementById('srv-request').textContent=document.getElementById('s-request').value;
+  }
+  goSupStep(s+1);
+}
+
+function snBack(s){goSupStep(s-1);}
+
+function goSupStep(s){
+  document.querySelectorAll('[id^="sp"]').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sp'+s).classList.add('active');
+  for(let i=1;i<=3;i++){
+    const el=document.getElementById('st'+i);
+    el.classList.remove('active','done');
+    if(i<s)el.classList.add('done');
+    else if(i===s)el.classList.add('active');
+  }
+  supStep=s;
+}
+
+function vSName(){const v=document.getElementById('s-name').value;setHint('sh-name',v.length>=2?'Valid':v?'Too short':'',v.length>=2?'valid':'invalid');}
+
+function updateSPlaceholder(){
+  const type=document.getElementById('s-type').value;
+  const ph={order_lookup:'Example: I want to check order ORD-001',refund:'Example: I need a refund for order ORD-001. Product arrived damaged.',complaint:'Example: My order was not as described.',inquiry:'Example: Do you offer free shipping above AED 200?'};
+  document.getElementById('s-request').placeholder=ph[type]||'Describe your request in detail';
+}
+
+async function submitSupport(){
+  const name=document.getElementById('s-name').value;
+  const type=document.getElementById('s-type').value;
+  const req=document.getElementById('s-request').value;
+  const fullReq=`${req} My name is ${name}.`;
+  addChat('support','user',fullReq);
+  addChat('support','agent','Processing your request...');
+  const t=Date.now();
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_type:'support',request:fullReq})});
+    const ms=Date.now()-t;
+    const data=await res.json();
+    showSupResult(data,ms);
+    recordReq('support',fullReq,data,ms);
+  }catch(e){
+    addChat('support','agent','Connection error. Please try again.');
+    recordReq('support',fullReq,{status:'ERROR',reason:e.message},0);
+  }
+}
+
+function showSupResult(data,ms){
+  const box=document.getElementById('sup-result');
+  if(data.status==='SUCCESS'){
+    addChat('support','agent',`Request processed! ${data.message||''}`);
+    let inner=`<div class="result-header"><div><div class="result-title">Request Processed</div><div class="result-subtitle">Type: ${data.request_type}</div></div></div><div class="result-grid">`;
+    if(data.order){
+      const statusSteps=['Placed','Processing','Shipped','Delivered'];
+      const idx=statusSteps.findIndex(s=>s.toLowerCase()===data.order.status.toLowerCase());
+      inner+=`<div class="result-item" style="grid-column:1/-1;">
+        <div class="result-item-label">Order Tracking</div>
+        <div class="order-status-track">
+          ${statusSteps.map((s,i)=>`
+            <div class="otrack-step">
+              <div class="otrack-circle ${i<idx?'done':i===idx?'current':''}">${i<idx?'✓':i+1}</div>
+              <div class="otrack-label">${s}</div>
+            </div>
+            ${i<statusSteps.length-1?`<div class="otrack-line ${i<idx?'done':''}"></div>`:''}`
+          ).join('')}
+        </div>
+      </div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Order ID</div><div class="result-item-value">${data.order.order_id}</div></div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Status</div><div class="result-item-value">${data.order.status}</div></div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Amount</div><div class="result-item-value">AED ${data.order.amount}</div></div>`;
+    }
+    if(data.refund){
+      inner+=`<div class="result-item"><div class="result-item-label">Refund ID</div><div class="result-item-value">${data.refund.refund_id}</div></div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Amount</div><div class="result-item-value">AED ${data.refund.amount}</div></div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Status</div><div class="result-item-value">${data.refund.status}</div></div>`;
+    }
+    if(data.ticket){
+      inner+=`<div class="result-item"><div class="result-item-label">Ticket ID</div><div class="result-item-value">${data.ticket.ticket_id}</div></div>`;
+      inner+=`<div class="result-item"><div class="result-item-label">Priority</div><div class="result-item-value">${data.ticket.priority}</div></div>`;
+    }
+    inner+=`</div><div class="result-meta">Response time: ${ms}ms</div>`;
+    box.className='result-card info show';
+    box.innerHTML=inner;
+    state.stats.total++;
+  }else{
+    addChat('support','agent',` ${data.reason||data.error}`);
+    box.className='result-card denied show';
+    box.innerHTML=`<div class="result-header"><div><div class="result-title">Request Failed</div><div class="result-subtitle">Please try again</div></div></div><p style="font-size:14px;color:var(--text-secondary);">${data.reason||data.error}</p><div class="result-meta">Response time: ${ms}ms</div>`;
+  }
+  state.stats.totalMs+=ms;state.stats.count++;
+  updateStats();
+}
+
+function clearSupport(){
+  document.getElementById('s-name').value='';
+  document.getElementById('s-email').value='';
+  document.getElementById('s-phone').value='';
+  document.getElementById('s-type').value='';
+  document.getElementById('s-priority').value='normal';
+  document.getElementById('s-request').value='';
+  document.getElementById('sup-result').className='result-card';
+  document.getElementById('sh-name').textContent='';
+  goSupStep(1);
+}
+
+// ---- CHAT ----
+function addChat(agent,role,msg){
+  const c=document.getElementById('chat-'+agent);
+  const d=document.createElement('div');
+  d.className='chat-msg '+role;
+  d.innerHTML=`<div class="chat-avatar">${role==='agent'?'':''}</div><div class="chat-bubble">${msg}</div>`;
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+}
+
+// ---- HISTORY ----
+function recordReq(type,req,res,ms){
+  const r={type,time:new Date().toLocaleTimeString(),status:res.status,req:req.substring(0,55)+'…',ms};
+  state.requests.push(r);
+  if(type==='financial'){state.finRequests.push(r);renderHistory('fin',state.finRequests);}
+  else{state.supRequests.push(r);renderHistory('sup',state.supRequests);}
+  document.getElementById('nb-total').textContent=state.stats.total+1;
+}
+
+function renderHistory(prefix,arr){
+  const wrap=document.getElementById(prefix+'-history');
+  const list=document.getElementById(prefix+'-history-list');
+  if(!arr.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  list.innerHTML=arr.slice(-5).reverse().map(r=>`
+    <div class="history-item">
+      <div class="history-dot ${r.status==='APPROVED'||r.status==='SUCCESS'?'success':r.status==='DENIED'?'warn':'error'}"></div>
+      <div class="history-text">${r.req}</div>
+      <div class="history-time">${r.time}</div>
+    </div>`).join('');
+}
+
+// ---- ANALYTICS ----
+function updateStats(){
+  const s=state.stats;
+  const total=s.total;
+  const rate=s.approved+s.denied>0?Math.round(s.approved/(s.approved+s.denied)*100):0;
+  const avgMs=s.count>0?Math.round(s.totalMs/s.count):0;
+  document.getElementById('kpi-total').textContent=total;
+  document.getElementById('kpi-success').textContent=rate+'%';
+  document.getElementById('kpi-speed').textContent=avgMs||'—';
+  document.getElementById('an-fin').textContent=state.finRequests.length;
+  document.getElementById('an-sup').textContent=state.supRequests.length;
+  document.getElementById('an-approved').textContent=s.approved;
+  document.getElementById('an-denied').textContent=s.denied;
+  document.getElementById('an-rate').textContent=rate+'%';
+  document.getElementById('an-app2').textContent=s.approved;
+  document.getElementById('an-den2').textContent=s.denied;
+  document.getElementById('an-tot2').textContent=s.approved+s.denied;
+  document.getElementById('an-speed').textContent=avgMs?avgMs+'ms':'—';
+  document.getElementById('an-err').textContent=total>0?Math.round((total-s.approved-state.supRequests.filter(r=>r.status==='SUCCESS').length)/total*100)+'%':'0%';
+  document.getElementById('nb-total').textContent=total;
+  updateActivityLog();
+}
+
+function updateActivityLog(){
+  const tbody=document.getElementById('activity-body');
+  if(!state.requests.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">No activity yet.</td></tr>';return;}
+  tbody.innerHTML=state.requests.slice(-10).reverse().map(r=>{
+    const isOk=r.status==='APPROVED'||r.status==='SUCCESS';
+    const isDenied=r.status==='DENIED';
+    const cls=isOk?'success':isDenied?'warn':'error';
+    return`<tr>
+      <td>${r.time}</td>
+      <td><span class="tag info">${r.type==='financial'?'Financial':'Support'}</span></td>
+      <td>${r.req}</td>
+      <td><span class="tag ${cls}">${r.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
