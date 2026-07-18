@@ -32,7 +32,7 @@ This system enables financial institutions to automate loan processing and custo
 - **AI/ML**: Groq LLM, Prompt Engineering
 - **Monitoring**: CloudWatch, Structured Logging
 
-## AWS Architecture
+## Architecture
 
 Browser (CloudFront HTTPS)
         ↓
