@@ -34,6 +34,7 @@ This system enables financial institutions to automate loan processing and custo
 
 ## Architecture
 
+```
 Browser (CloudFront HTTPS)
         ↓
 Static Frontend (S3 + CloudFront)
@@ -44,6 +45,7 @@ AWS Lambda — Python 3.12
 (FastAPI + Groq LLM + DynamoDB + Decimal Math)
         ↓
 DynamoDB (orders, refunds, tickets) + CloudWatch (analytics logs)
+```
 
 ## License
 
