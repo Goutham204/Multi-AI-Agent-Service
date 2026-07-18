@@ -27,13 +27,13 @@ This system enables financial institutions to automate loan processing and custo
 
 ## Technologies
 
-**Backend**: Python 3.12, Groq LLM, AWS Lambda
-**Frontend**: HTML5, CSS3, Vanilla JavaScript
-**Cloud**: AWS (Lambda, API Gateway, DynamoDB, S3, CloudFront)
-**AI/ML**: Groq LLM, Prompt Engineering, JSON Extraction
-**Monitoring**: CloudWatch, Structured Logging
+- **Backend**: Python 3.12, Groq LLM, AWS Lambda
+- **Cloud**: AWS Lambda, API Gateway, DynamoDB, S3, CloudFront
+- **AI/ML**: Groq LLM, Prompt Engineering
+- **Monitoring**: CloudWatch, Structured Logging
 
-AWS Architecture
+## AWS Architecture
+
 ┌─────────────────────────────────────────────────────────────┐
 │                    User Browser                             │
 └────────────────────┬────────────────────────────────────────┘
