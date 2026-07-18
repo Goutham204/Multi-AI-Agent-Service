@@ -1,6 +1,6 @@
 ## Multi AI-Agent Service
 
-The Multi-Agent Financial Platform is a production-ready AI-powered system for real-time financial service processing and customer support automation. Built with Groq LLM and deployed on AWS serverless architecture, it demonstrates enterprise-grade AI integration, cloud infrastructure design, and full-stack development for financial workflows.
+The Multi AI-Agent Service Platform is a production-ready AI-powered system for real-time financial service processing and customer support automation. Built with Groq LLM and deployed on AWS serverless architecture, it demonstrates enterprise-grade AI integration, cloud infrastructure design, and full-stack development for financial workflows.
 
 ## Project Overview
 
@@ -34,61 +34,16 @@ This system enables financial institutions to automate loan processing and custo
 
 ## AWS Architecture
 
-┌─────────────────────────────────────────────────────────────┐
-│                    User Browser                             │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ↓
-         ┌───────────────────────┐
-         │   CloudFront CDN      │  Global Distribution
-         │  (S3 + Caching)       │  HTTPS Everywhere
-         └───────────┬───────────┘
-                     │
-                     ↓
-    ┌────────────────────────────────┐
-    │  API Gateway REST Endpoint     │  Request Routing
-    │  (CORS, Protocol Handling)     │  Response Formatting
-    └───────────┬────────────────────┘
-                │
-                ↓
-    ┌────────────────────────────────┐
-    │   AWS Lambda Router            │  Python 3.12
-    │   (Single Function Handler)    │  Unified Orchestrator
-    │   - Financial Agent            │
-    │   - Support Agent              │
-    └──┬─────────────────────────┬───┘
-       │                         │
-       ↓                         ↓
-   ┌─────────────┐         ┌──────────────┐
-   │  Financial  │         │   Support    │
-   │    Agent    │         │    Agent     │
-   └──────┬──────┘         └────────┬─────┘
-          │                         │
-          ↓                         ↓
-  ┌──────────────────────────────────────┐
-  │   Groq LLM Integration               │  Llama 3.1 8B
-  │   - Prompt Engineering               │  <500ms Inference
-  │   - JSON Extraction                  │  30 RPM Free Tier
-  │   - Retry Logic (3x, Exponential)   │
-  └──────────────┬───────────────────────┘
-                 │
-        ┌────────┴────────┐
-        ↓                 ↓
-   ┌─────────┐      ┌──────────┐
-   │ Extract  │      │ Validate │
-   │  Data    │      │  Rules   │
-   └─────────┘      └──────────┘
-        │                 │
-        └────────┬────────┘
-                 ↓
-    ┌────────────────────────┐
-    │   AWS DynamoDB         │  Real Data
-    │  - orders table        │  Persistence
-    │  - refunds table       │  Audit Trail
-    │  - tickets table       │
-    └────────────────────────┘
-        │
-        └─→ Mock Fallback (Graceful Degradation)
+Browser (CloudFront HTTPS)
+        ↓
+Static Frontend (S3 + CloudFront)
+        ↓
+API Gateway REST Endpoint
+        ↓
+AWS Lambda — Python 3.12
+(FastAPI + Groq LLM + DynamoDB + Decimal Math)
+        ↓
+DynamoDB (orders, refunds, tickets) + CloudWatch (analytics logs)
 
 ## License
 
