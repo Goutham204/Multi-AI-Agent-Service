@@ -92,6 +92,7 @@ AWS Architecture
 
 
 ##Key Achievements
+
 - Performance: <500ms response time (typical 200–400ms), 99th percentile <1 second
 - Reliability: 99.9% uptime, 100% success rate on valid requests, graceful error handling
 - Scalability: Handles 10,000+ concurrent requests without infrastructure changes
@@ -102,4 +103,5 @@ AWS Architecture
 - LLM Integration: Sophisticated prompt engineering, JSON parsing fallbacks, retry logic
 
 ##License
+
 This project is open-source under the MIT License.
