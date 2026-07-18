@@ -16,14 +16,14 @@ This system enables financial institutions to automate loan processing and custo
 
 ## Features
 
-**AI-Driven Processing**: Groq LLM with prompt engineering and structured extraction
-**Intelligent Eligibility**: Real-time assessment (income, credit, employment)
-**Multi-Tiered Rates**: Credit-based APR tiers (3.5% - 7.0%)
-**Professional Offers**: Auto-generated with PDF export
-**Real-Time Support**: Order lookup, refund processing, ticket management
-**High-Value Monitoring**: Automatic flagging for compliance
-**Professional Dashboard**: Multi-step wizards, dark mode, analytics, charts
-**Production Observability**: CloudWatch logging, performance tracking, audit trails
+- **AI-Driven Processing**: Groq LLM with prompt engineering and structured extraction
+- **Intelligent Eligibility**: Real-time assessment (income, credit, employment)
+- **Multi-Tiered Rates**: Credit-based APR tiers (3.5% - 7.0%)
+- **Professional Offers**: Auto-generated with PDF export
+- **Real-Time Support**: Order lookup, refund processing, ticket management
+- **High-Value Monitoring**: Automatic flagging for compliance
+- **Professional Dashboard**: Multi-step wizards, dark mode, analytics, charts
+- **Production Observability**: CloudWatch logging, performance tracking, audit trails
 
 ## Technologies
 
