@@ -6,7 +6,7 @@ The Multi-Agent Financial Platform is a production-ready AI-powered system for r
 
 This system enables financial institutions to automate loan processing and customer support operations using AI:
 
-### Core Capabilities
+## Core Capabilities
 - **AI-Powered Loan Processing**: Groq LLM processes applications in <500ms
 - **Automated Eligibility Assessment**: Income, credit score, and employment validation
 - **Precision Financial Calculations**: Decimal-based interest rate computation
@@ -90,18 +90,6 @@ This system enables financial institutions to automate loan processing and custo
         │
         └─→ Mock Fallback (Graceful Degradation)
 
-
-##Key Achievements
-
-- Performance: <500ms response time (typical 200–400ms), 99th percentile <1 second
-- Reliability: 99.9% uptime, 100% success rate on valid requests, graceful error handling
-- Scalability: Handles 10,000+ concurrent requests without infrastructure changes
-- Security: CORS whitelist, input validation, API key protection, error masking, secure calculations
-- Cost Efficiency: Operating within AWS free tier + Groq free tier (zero monthly cost)
-- UI/UX: Professional design, dark mode, real-time validation, analytics dashboard
-- Production-Grade: CloudWatch logging, request tracing, comprehensive error handling
-- LLM Integration: Sophisticated prompt engineering, JSON parsing fallbacks, retry logic
-
-##License
+## License
 
 This project is open-source under the MIT License.
